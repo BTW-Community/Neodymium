@@ -1,3 +1,5 @@
+# This is a fork of [Makamys' Neodymium mod for Minecraft 1.7.10](https://github.com/makamys/Neodymium) for BTW CE.
+What follows is the original README.
 # Neodymium
 
 Neodymium is a mod that reimplements chunk rendering in Minecraft 1.7.10 using modern OpenGL. This should improve performance on most hardware.
