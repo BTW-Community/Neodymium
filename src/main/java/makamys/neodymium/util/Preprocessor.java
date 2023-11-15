@@ -43,7 +43,7 @@ public class Preprocessor {
     }
     
     public static enum IfElseBlockStatus {
-        NONE, IF, ELSE;
+        NONE, IF, ELSE
     }
     
 }

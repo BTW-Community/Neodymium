@@ -4,42 +4,29 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
-import static makamys.neodymium.Constants.LOGGER;
-import static makamys.neodymium.Constants.MODID;
-import static makamys.neodymium.Constants.VERSION;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.apache.commons.lang3.EnumUtils;
+import btw.BTWAddon;
+import net.fabricmc.loader.FabricLoaderImpl;
+import net.fabricmc.loader.gui.FabricGuiEntry;
+import net.fabricmc.loader.launch.common.FabricLauncher;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.client.config.IConfigElement;
-import makamys.neodymium.Neodymium;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
-import net.minecraftforge.common.config.Property.Type;
-
-public class Config {
-
+public class Config extends BTWAddon {
+    public static Config instance;
     @ConfigBoolean(cat="_general", def=true, com="Set this to false to fully disable the mod.")
     public static boolean enabled;
     @ConfigBoolean(cat="_general", def=false, com="Apply changes made in the config file immediately without having to manually reload the renderer. Off by default because it could potentially cause poor performance on certain platforms.")
@@ -86,11 +73,60 @@ public class Config {
     @ConfigBoolean(cat="debug", def=false, com="Enable building of vanilla chunk meshes. Makes it possible to switch to the vanilla renderer on the fly, at the cost of reducing chunk update performance.")
     public static boolean enableVanillaChunkMeshes;
     
-    private static Configuration config;
-    private static File configFile = new File(Launch.minecraftHome, "config/" + MODID + ".cfg");
+    private static Map<String, Map<String, String>> config;
+    private static File configFile = null;//new File(FabricLauncherBase.getLauncher()., "config/" + MODID + ".cfg");
     private static WatchService watcher;
-    
-    public static void reloadConfig(ReloadInfo info) {
+
+    public Config() {
+        super("Neodymium BTW", "0.2.1", "ND");
+    }
+
+    private void registerProperties() {
+        registerProperty("enabled", "true", "Set this to false to fully disable the mod.");
+        registerProperty("hotswap", "false", "DOESNT WORK: Apply changes made in the config file immediately without having to manually reload the renderer. Off by default because it could potentially cause poor performance on certain platforms.");
+        registerProperty("simplifyChunkMeshes", "false", "Simplify chunk meshes so they are made of less vertices. Reduces vertex count at the cost of increasing shader complexity. It seems to reduce performance overall.");
+        registerProperty("cullFaces", "true", "Don't submit faces for rendering if they are facing away from the camera. Reduces GPU workload at the cost of increasing driver overhead. This will improve the framerate most of the time, but may reduce it if you are not fillrate-limited (such as when playing on a small resolution).");
+        registerProperty("shortUV", "false", "Store texture coordinates as shorts instead of floats. Slightly reduces memory usage and might improve performance by small amount. Might affect visuals slightly, but it's only noticable if the texture atlas is huge.");
+        registerProperty("sortFrequency", "1", "Interval (in frames) between the sorting of transparent meshes. Increasing this will reduce CPU usage, but also increase the likelyhood of graphical artifacts appearing when transparent chunks are loaded.");
+        registerProperty("fogOcclusion", "true", "Don't render meshes that are shrouded in fog. OptiFine also does this when fog is turned on, this setting makes Neodymium follow suit.");
+        registerProperty("fogOcclusionWithoutFog", "false", "Do fog occlusion even if fog is disabled.");
+        registerProperty("VRAMSize", "512", "VRAM buffer size (MB). 512 seems to be a good value on Normal render distance. Increase this if you encounter warnings about the VRAM getting full. Does not affect RAM usage.");
+        registerProperty("renderFog", "auto", "Render fog? Slightly reduces framerate. `auto` means the OpenGL setting will be respected (as set by mods like OptiFine).\nValid values: true, false, auto");
+        registerProperty("maxUnalignedQuadDistance", "2147483647", "Chunks further away than this distance (in chunks) will not have unaligned quads such as tall grass rendered.");
+        registerProperty("replaceOpenGLSplash", "true", "DOESNT WORK: Replace splash that says 'OpenGL 1.2!' with 'OpenGL 3.3!'. Just for fun.");
+        registerProperty("ignoreIncompatibilities", "false", "Don't warn about incompatibilities in chat, and activate renderer even in spite of critical ones.");
+        registerProperty("silenceErrors", "false", "Don't print non-critical rendering errors.");
+        registerProperty("maxMeshesPerFrame", "-1", "");
+        registerProperty("debugPrefix", "61", "The LWJGL keycode of the key that has to be held down while pressing the debug keybinds. Setting this to 0 will make the keybinds usable without holding anything else down. Setting this to -1 will disable debug keybinds entirely.");
+        registerProperty("showDebugInfo", "true", "Set this to false to stop showing the debug info in the F3 overlay.");
+        registerProperty("wireframe", "false", "");
+        registerProperty("enableVanillaChunkMeshes", "false", "Enable building of vanilla chunk meshes. Makes it possible to switch to the vanilla renderer on the fly, at the cost of reducing chunk update performance.");
+    }
+
+    @Override
+    public void handleConfigProperties(Map<String, String> propertyValues) {
+        enabled = Boolean.parseBoolean(propertyValues.get("enabled"));
+        hotswap = Boolean.parseBoolean(propertyValues.get("hotswap"));
+        simplifyChunkMeshes = Boolean.parseBoolean(propertyValues.get("simplifyChunkMeshes"));
+        cullFaces = Boolean.parseBoolean(propertyValues.get("cullFaces"));
+        shortUV = Boolean.parseBoolean(propertyValues.get("shortUV"));
+        sortFrequency = Integer.parseInt(propertyValues.get("sortFrequency"));
+        fogOcclusion = Boolean.parseBoolean(propertyValues.get("fogOcclusion"));
+        fogOcclusionWithoutFog = Boolean.parseBoolean(propertyValues.get("fogOcclusionWithoutFog"));
+        VRAMSize = Integer.parseInt(propertyValues.get("VRAMSize"));
+        renderFog = AutomatableBoolean.valueOf(propertyValues.get("renderFog").toUpperCase());
+        maxUnalignedQuadDistance = Integer.parseInt(propertyValues.get("maxUnalignedQuadDistance"));
+        replaceOpenGLSplash = Boolean.parseBoolean(propertyValues.get("replaceOpenGLSplash"));
+        ignoreIncompatibilities = Boolean.parseBoolean(propertyValues.get("ignoreIncompatibilities"));
+        silenceErrors = Boolean.parseBoolean(propertyValues.get("silenceErrors"));
+        maxMeshesPerFrame = Integer.parseInt(propertyValues.get("maxMeshesPerFrame"));
+        debugPrefix = Integer.parseInt(propertyValues.get("debugPrefix"));
+        showDebugInfo = Boolean.parseBoolean(propertyValues.get("showDebugInfo"));
+        wireframe = Boolean.parseBoolean(propertyValues.get("wireframe"));
+        enableVanillaChunkMeshes = Boolean.parseBoolean(propertyValues.get("enableVanillaChunkMeshes"));
+    }
+
+    /*public static void reloadConfig(ReloadInfo info) {
         try {
             if(configFile.exists() && Files.size(configFile.toPath()) == 0) {
                 // Sometimes the watcher fires twice, and the first time the file is empty.
@@ -109,8 +145,9 @@ public class Config {
         if(info != null) {
             info.needReload = needReload;
         }
-        
-        config.setCategoryComment("debug", "Note: Some debug features are only available in creative mode or dev environments.");
+        Map map = new HashMap<>();
+        map.put("", "Note: Some debug features are only available in creative mode or dev environments.");
+        config.put("debug", map);
         
         if(config.hasChanged() || (!config.getLoadedConfigVersion().equals(config.getDefinedConfigVersion()))) {
             config.save();
@@ -123,13 +160,14 @@ public class Config {
                 LOGGER.warn("Failed to register watch service: " + e + " (" + e.getMessage() + "). Changes to the config file will not be reflected");
             }
         }
-    }
+    }*/
     
     public static void reloadConfig() {
-        reloadConfig(null);
+        //reloadConfig(null);
     }
-    
-    private static boolean loadFields(Configuration config) {
+
+
+    /*private static boolean loadFields(Map<String, Map<String, String>> config) {
         boolean needReload = false;
         
         for(Field field : Config.class.getFields()) {
@@ -217,7 +255,7 @@ public class Config {
         }
         
         return needReload;
-    }
+    }*/
     
     public static boolean reloadIfChanged(ReloadInfo info) {
         boolean reloaded = false;
@@ -227,7 +265,7 @@ public class Config {
             if(key != null) {
                 for(WatchEvent<?> event: key.pollEvents()) {
                     if(event.context().toString().equals(configFile.getName())) {
-                        reloadConfig(info);
+                        //reloadConfig(info);
                         reloaded = true;
                     }
                 }
@@ -237,25 +275,35 @@ public class Config {
         
         return reloaded;
     }
-    
+
     private static void registerWatchService() throws IOException {
         watcher = FileSystems.getDefault().newWatchService();
         configFile.toPath().getParent().register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
     }
     
-    public static List<IConfigElement> getElements() {
-        List<IConfigElement> list = new ArrayList<IConfigElement>();
-        for(Property prop : config.getCategory("render").values()) {
+    public static List<HumanReadableConfigElement> getElements() {
+        List<HumanReadableConfigElement> list = new ArrayList<>();
+        for(String prop : config.get("render").values()) {
             list.add(new HumanReadableConfigElement(prop));
         }
         return list;
     }
+
+    @Override
+    public void preInitialize() {
+        this.registerProperties();
+    }
+
+    @Override
+    public void initialize() {
+        instance = this;
+    }
     
-    public static void flush() {
+    /*public static void flush() {
         if(config.hasChanged()) {
             config.save();
         }
-    }
+    }*/
     
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "neodymium",
+  "version": "${version}",
+  "name": "Neodymium BTW",
+  "description": "",
+  "authors": [
+    "Makamys",
+    "Arminias"
+  ],
+  "contact": {
+  },
+
+  "license": "LGPL-3.0",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "init": [
+      "makamys.neodymium.Neodymium"
+    ],
+    "preLaunch": [
+      "makamys.neodymium.Neodymium"
+    ]
+  },
+  "mixins": [
+    "neodymium.mixin.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

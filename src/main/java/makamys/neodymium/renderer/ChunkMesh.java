@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
+import makamys.neodymium.mixin.TessellatorAccessor;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -19,10 +21,7 @@ import makamys.neodymium.util.RecyclingList;
 import makamys.neodymium.util.Util;
 import makamys.neodymium.util.WarningHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.src.*;
 
 /** A mesh for a 16x16x16 region of the world. */
 public class ChunkMesh extends Mesh {
@@ -35,7 +34,7 @@ public class ChunkMesh extends Mesh {
     public static int usedRAM = 0;
     public static int instances = 0;
     
-    private static RecyclingList<MeshQuad> quadBuf = new RecyclingList<>(() -> new MeshQuad());
+    private static RecyclingList<MeshQuad> quadBuf = new RecyclingList<>(MeshQuad::new);
     
     private static ChunkMesh meshCaptureTarget;
     
@@ -76,39 +75,39 @@ public class ChunkMesh extends Mesh {
             meshCaptureTarget.addTessellatorData(t);
         }
     }
-    
+
     private void addTessellatorData(Tessellator t) {
         tesselatorDataCount++;
         
-        if(t.vertexCount == 0) {
+        if(((TessellatorAccessor)t).getVertexCount() == 0) {
             // Sometimes the tessellator has no vertices and weird flags. Don't warn in this case, just silently return.
             return;
         }
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
-        if(t.drawMode != GL11.GL_QUADS && t.drawMode != GL11.GL_TRIANGLES) {
-            errors.add("Unsupported draw mode: " + t.drawMode);
+        if(((TessellatorAccessor) t).getDrawMode() != GL11.GL_QUADS && ((TessellatorAccessor) t).getDrawMode() != GL11.GL_TRIANGLES) {
+            errors.add("Unsupported draw mode: " + ((TessellatorAccessor) t).getDrawMode());
         }
-        if(!t.hasTexture) {
+        if(!((TessellatorAccessor) t).isHasTexture()) {
             errors.add(String.format("Texture data is missing."));
         }
-        if(!t.hasBrightness) {
+        if(!((TessellatorAccessor) t).isHasBrightness()) {
             warnings.add("Brightness data is missing");
         }
-        if(!t.hasColor) {
+        if(!((TessellatorAccessor) t).isHasColor()) {
             warnings.add("Color data is missing");
         }
-        if(t.hasNormals && GL11.glIsEnabled(GL11.GL_LIGHTING)) {
+        if(((TessellatorAccessor) t).isHasNormals() && GL11.glIsEnabled(GL11.GL_LIGHTING)) {
             errors.add("Chunk uses GL lighting, this is not implemented.");
         }
-        FLAGS.hasBrightness = t.hasBrightness;
-        FLAGS.hasColor = t.hasColor;
+        FLAGS.hasBrightness = ((TessellatorAccessor) t).isHasBrightness();
+        FLAGS.hasColor = ((TessellatorAccessor) t).isHasColor();
         
-        int verticesPerPrimitive = t.drawMode == GL11.GL_QUADS ? 4 : 3;
+        int verticesPerPrimitive = ((TessellatorAccessor) t).getDrawMode() == GL11.GL_QUADS ? 4 : 3;
         
-        for(int quadI = 0; quadI < t.vertexCount / verticesPerPrimitive; quadI++) {
+        for(int quadI = 0; quadI < ((TessellatorAccessor) t).getVertexCount() / verticesPerPrimitive; quadI++) {
             MeshQuad quad = quadBuf.next();
-            quad.setState(t.rawBuffer, quadI * (verticesPerPrimitive * 8), FLAGS, t.drawMode, (float)-t.xOffset, (float)-t.yOffset, (float)-t.zOffset);
+            quad.setState(((TessellatorAccessor) t).getRawBuffer(), quadI * (verticesPerPrimitive * 8), FLAGS, ((TessellatorAccessor) t).getDrawMode(), (float)-((TessellatorAccessor) t).getXOffset(), (float)-((TessellatorAccessor) t).getYOffset(), (float)-((TessellatorAccessor) t).getZOffset());
             if(quad.deleted) {
                 quadBuf.remove();
             }
@@ -127,7 +126,7 @@ public class ChunkMesh extends Mesh {
                         for(String warning : warnings) {
                             LOGGER.error("Warning: " + warning);
                         }
-                        LOGGER.error("(World renderer pos: ({}, {}, {}), Tessellator pos: ({}, {}, {}), Tessellation count: {}", wr.posX, wr.posY, wr.posZ, t.xOffset, t.yOffset, t.zOffset, tesselatorDataCount);
+                        LOGGER.error("(World renderer pos: ({}, {}, {}), Tessellator pos: ({}, {}, {}), Tessellation count: {}", wr.posX, wr.posY, wr.posZ, ((TessellatorAccessor) t).getXOffset(), ((TessellatorAccessor) t).getYOffset(), ((TessellatorAccessor) t).getZOffset(), tesselatorDataCount);
                         LOGGER.error("Stack trace:");
                         try {
                             // Generate a stack trace
@@ -146,7 +145,7 @@ public class ChunkMesh extends Mesh {
     }
     
     private static String tessellatorToString(Tessellator t) {
-        return "(" + t.xOffset + ", " + t.yOffset + ", " + t.zOffset + ")";
+        return "(" + ((TessellatorAccessor) t).getXOffset() + "," + ((TessellatorAccessor) t).getYOffset() + "," + ((TessellatorAccessor) t).getZOffset() + ")";
     }
     
     public void finishConstruction() {
@@ -155,7 +154,7 @@ public class ChunkMesh extends Mesh {
         if(Config.simplifyChunkMeshes) {
             ArrayList<ArrayList<MeshQuad>> quadsByPlaneDir = new ArrayList<>(); // XY, XZ, YZ
             for(int i = 0; i < 3; i++) {
-                quadsByPlaneDir.add(new ArrayList<MeshQuad>());
+                quadsByPlaneDir.add(new ArrayList<>());
             }
             for(MeshQuad quad : quads) {
                 if(quad.getPlane() != MeshQuad.Plane.NONE) {
@@ -215,9 +214,9 @@ public class ChunkMesh extends Mesh {
                 lastQuad = quad;
             }
         }
-        
-        for(int i = 0; i < planeQuads.size(); i++) {
-            planeQuads.get(i).mergeReference = null;
+
+        for (MeshQuad planeQuad : planeQuads) {
+            planeQuad.mergeReference = null;
         }
         
         // Pass 2: merge rows to create rectangles
@@ -303,7 +302,8 @@ public class ChunkMesh extends Mesh {
         wr.isInFrustum = true;
         wr.chunkIndex = 0;
         wr.markDirty();
-        wr.updateRenderer(Minecraft.getMinecraft().thePlayer);
+        //wr.updateRenderer(Minecraft.getMinecraft().thePlayer);
+        wr.updateRenderer();
         return ((IWorldRenderer)wr).getChunkMeshes();
     }
     
@@ -354,7 +354,7 @@ public class ChunkMesh extends Mesh {
             return interpZDiv < ((z + 1));
         default:
             return pass != 0 || Config.maxUnalignedQuadDistance == Integer.MAX_VALUE
-            || Util.distSq(interpXDiv, interpYDiv, interpZDiv, x, y, z) < Math.pow((double)Config.maxUnalignedQuadDistance, 2);
+            || Util.distSq(interpXDiv, interpYDiv, interpZDiv, x, y, z) < Math.pow(Config.maxUnalignedQuadDistance, 2);
         }
     }
     

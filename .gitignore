@@ -1,35 +1,22 @@
-# mac os
-.DS_Store
-
-# forge / gradle
+# Ignore Gradle project-specific cache directory
 .gradle
-build/
-out/
-classes/
-run/
 
-# eclipse 
-*.launch
-.settings
-.classpath
-.project
-.metadata
-eclipse
-*.launch
+# Ignore Gradle build output directories
+**/build/
+!src/**/build/
 
-# idea
-.idea/
+# Screws up the MC dev plugin for IntelliJ..
+# src/btw/**
+
+# Ignore local Minecraft folder
+.minecraft
+
+# IntelliJ
 *.iml
-*.ipr
-*.iws
-
-# vscode
-.settings/
-.vscode/
-bin/
-.classpath
-
-# other
-bin/
-jars/
-/.nb-gradle/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/jarRepositories.xml

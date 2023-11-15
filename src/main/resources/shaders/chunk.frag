@@ -1,4 +1,11 @@
-#version 330 core
+#version 140
+precision highp float;
+precision highp int;
+precision lowp sampler2D;
+precision lowp samplerCube;
+precision mediump int;
+precision lowp sampler2D;
+precision lowp samplerCube;
 out vec4 FragColor;
 
 in vec2 TexCoord;
@@ -6,7 +13,7 @@ in vec2 BTexCoord;
 in vec4 Color;
 in vec4 MQPos;
 in vec4 Viewport;
-in mat4 ProjInv;
+//in mat4 ProjInv;
 in vec4 FogColor;
 in vec2 FogStartEnd;
 in float FogFactor;

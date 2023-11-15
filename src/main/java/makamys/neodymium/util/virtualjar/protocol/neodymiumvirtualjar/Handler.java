@@ -8,11 +8,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import net.minecraft.launchwrapper.Launch;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
 
 public class Handler extends URLStreamHandler {
 
-    private static final IURLStreamHandlerImpl impl = (IURLStreamHandlerImpl)Launch.blackboard.get(MODID + "." + PROTOCOL + ".impl");
+    private static final IURLStreamHandlerImpl impl = (IURLStreamHandlerImpl) FabricLauncherBase.getProperties().get(MODID + "." + PROTOCOL + ".impl");
 
     @Override
     protected URLConnection openConnection(URL url) throws IOException {

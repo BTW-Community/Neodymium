@@ -1,6 +1,6 @@
 package makamys.neodymium.command;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.src.ICommandSender;
 
 public interface ISubCommand {
     

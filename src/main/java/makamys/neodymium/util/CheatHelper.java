@@ -1,13 +1,13 @@
 package makamys.neodymium.util;
 
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.world.World;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.World;
 
 public class CheatHelper {
-    
-    private static final boolean IS_DEV_ENVIRONMENT = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
+    private static final boolean IS_DEV_ENVIRONMENT = FabricLauncherBase.getLauncher().isDevelopment();
     
     public static boolean canCheat() {
         if(IS_DEV_ENVIRONMENT) {

@@ -1,5 +1,6 @@
 package makamys.neodymium.mixin;
 
+import net.minecraft.src.Tessellator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -9,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import makamys.neodymium.config.Config;
 import makamys.neodymium.ducks.ITessellator;
 import makamys.neodymium.renderer.ChunkMesh;
-import net.minecraft.client.renderer.Tessellator;
 
 @Mixin(Tessellator.class)
 abstract class MixinTessellator implements ITessellator {

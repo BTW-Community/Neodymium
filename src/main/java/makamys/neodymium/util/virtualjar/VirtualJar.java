@@ -3,7 +3,6 @@ package makamys.neodymium.util.virtualjar;
 import static makamys.neodymium.Constants.MODID;
 import static makamys.neodymium.Constants.PROTOCOL;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -15,6 +14,7 @@ import java.util.Map;
 import static makamys.neodymium.Constants.LOGGER;
 
 import makamys.neodymium.util.virtualjar.protocol.neodymiumvirtualjar.Handler;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.launchwrapper.Launch;
 
 
@@ -36,7 +36,7 @@ public class VirtualJar {
         // by the LaunchClassLoader. The solution? Make the Handler just a proxy that delegates the real work to
         // VirtualJar.StreamHandlerImpl. We use the blackboard as a class loader-agnostic way of sharing information.
         Handler.IURLStreamHandlerImpl streamHandlerImpl = new StreamHandlerImpl();
-        Launch.blackboard.put(MODID + "." + PROTOCOL + ".impl", streamHandlerImpl);
+        FabricLauncherBase.getProperties().put(MODID + "." + PROTOCOL + ".impl", streamHandlerImpl);
         URLStreamHandlerHelper.register(Handler.class);
         
         registered = true;

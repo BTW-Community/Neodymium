@@ -1,17 +1,17 @@
 package makamys.neodymium.config;
 
-import net.minecraftforge.common.config.ConfigElement;
-import net.minecraftforge.common.config.Property;
 
-public class HumanReadableConfigElement extends ConfigElement {
 
-    public HumanReadableConfigElement(Property prop) {
-        super(prop);
+public class HumanReadableConfigElement {//extends ConfigElement {
+
+    String s;
+
+    public HumanReadableConfigElement(String prop) {
+        s = prop;
     }
-    
-    @Override
+
     public String getName() {
-        return decamelize(super.getName());
+        return decamelize(s);
     }
     
     private static String decamelize(String s) {

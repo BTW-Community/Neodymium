@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import makamys.neodymium.mixin.NetClientHandlerAccessor;
+import makamys.neodymium.mixin.PlayerControllerMPAccessor;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -36,11 +39,7 @@ import makamys.neodymium.util.OFUtil;
 import makamys.neodymium.util.Preprocessor;
 import makamys.neodymium.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
+import net.minecraft.src.*;
 
 /** The main renderer class. */
 public class NeoRenderer {
@@ -149,11 +148,11 @@ public class NeoRenderer {
             }
             
             if(rendererActive && renderWorld) {
-                Minecraft.getMinecraft().entityRenderer.enableLightmap((double)alpha);
+                Minecraft.getMinecraft().entityRenderer.enableLightmap(alpha);
                 
                 render(renderPass, alpha);
                 
-                Minecraft.getMinecraft().entityRenderer.disableLightmap((double)alpha);
+                Minecraft.getMinecraft().entityRenderer.disableLightmap(alpha);
             }
         }
     }
@@ -228,7 +227,7 @@ public class NeoRenderer {
     }
     
     private void mainLoop() {
-        if(Minecraft.getMinecraft().playerController.netClientHandler.doneLoadingTerrain) {
+        if(((NetClientHandlerAccessor)((PlayerControllerMPAccessor) Minecraft.getMinecraft().playerController).getNetClientHandler()).isDoneLoadingTerrain()) {
             for(Iterator<Entry<ChunkCoordIntPair, NeoRegion>> it = loadedRegionsMap.entrySet().iterator(); it.hasNext();) {
                 Entry<ChunkCoordIntPair, NeoRegion> kv = it.next();
                 NeoRegion v = kv.getValue();
@@ -281,7 +280,7 @@ public class NeoRenderer {
     FloatBuffer modelView = BufferUtils.createFloatBuffer(16);
     FloatBuffer projBuf = BufferUtils.createFloatBuffer(16);
     IntBuffer viewportBuf = BufferUtils.createIntBuffer(16);
-    FloatBuffer projInvBuf = BufferUtils.createFloatBuffer(16);
+    //FloatBuffer projInvBuf = BufferUtils.createFloatBuffer(16);
     FloatBuffer fogColorBuf = BufferUtils.createFloatBuffer(16);
     FloatBuffer fogStartEnd = BufferUtils.createFloatBuffer(2);
     Matrix4f modelViewMatrix = new Matrix4f();
@@ -319,8 +318,8 @@ public class NeoRenderer {
         projMatrix.load(projBuf);
         projBuf.flip();
         projMatrix.invert();
-        projMatrix.store(projInvBuf);
-        projInvBuf.flip();
+        //projMatrix.store(projInvBuf);
+        //projInvBuf.flip();
         
         modelViewMatrix.load(modelView);
         modelView.flip();
@@ -344,7 +343,7 @@ public class NeoRenderer {
         int u_playerPos = glGetUniformLocation(shaderProgram, "playerPos");
         int u_light = glGetUniformLocation(shaderProgram, "lightTex");
         int u_viewport = glGetUniformLocation(shaderProgram, "viewport");
-        int u_projInv = glGetUniformLocation(shaderProgram, "projInv");
+        //int u_projInv = glGetUniformLocation(shaderProgram, "projInv");
         int u_fogColor = glGetUniformLocation(shaderProgram, "fogColor");
         int u_fogStartEnd = glGetUniformLocation(shaderProgram, "fogStartEnd");
         int u_fogMode = glGetUniformLocation(shaderProgram, "fogMode");
@@ -352,7 +351,7 @@ public class NeoRenderer {
         
         glUniformMatrix4(u_modelView, false, modelView);
         glUniformMatrix4(u_proj, false, projBuf);
-        glUniformMatrix4(u_projInv, false, projInvBuf);
+        //glUniformMatrix4(u_projInv, false, projInvBuf);
         glUniform4f(u_viewport, viewportBuf.get(0),viewportBuf.get(1),viewportBuf.get(2),viewportBuf.get(3));
         glUniform4(u_fogColor, fogColorBuf);
         glUniform2(u_fogStartEnd, fogStartEnd);
@@ -366,7 +365,7 @@ public class NeoRenderer {
         modelView.position(0);
         projBuf.position(0);
         viewportBuf.position(0);
-        projInvBuf.position(0);
+        //projInvBuf.position(0);
         fogColorBuf.position(0);
         fogStartEnd.position(0);
     }
@@ -653,7 +652,7 @@ public class NeoRenderer {
         public int compare(NeoChunk p1, NeoChunk p2) {
             int distSq1 = distSq(p1);
             int distSq2 = distSq(p2);
-            return distSq1 < distSq2 ? -1 : distSq1 > distSq2 ? 1 : 0;
+            return Integer.compare(distSq1, distSq2);
         }
         
         int distSq(NeoChunk p) {
@@ -677,7 +676,7 @@ public class NeoRenderer {
         public int compare(ChunkCoordIntPair p1, ChunkCoordIntPair p2) {
             int distSq1 = distSq(p1);
             int distSq2 = distSq(p2);
-            return distSq1 < distSq2 ? -1 : distSq1 > distSq2 ? 1 : 0;
+            return Integer.compare(distSq1, distSq2);
         }
         
         int distSq(ChunkCoordIntPair p) {

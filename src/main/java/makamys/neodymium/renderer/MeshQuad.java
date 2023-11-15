@@ -86,7 +86,7 @@ public class MeshQuad {
             bs[vi] = flags.hasBrightness ? rawBuffer[i + 7] : DEFAULT_BRIGHTNESS;
             cs[vi] = flags.hasColor ? rawBuffer[i + 5] : DEFAULT_COLOR;
             
-            i += 8;
+            //i += 8;
         }
         
         if(vertices == 3) {

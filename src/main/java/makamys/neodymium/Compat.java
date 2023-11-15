@@ -5,18 +5,19 @@ import static makamys.neodymium.Constants.LOGGER;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
+import makamys.neodymium.mixin.PlayerUsageSnooperAccessor;
+import net.fabricmc.loader.gui.FabricGuiEntry;
+import net.fabricmc.loader.launch.common.FabricLauncherBase;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.src.GameSettings;
 import org.lwjgl.opengl.GLContext;
 
-import com.falsepattern.triangulator.api.ToggleableTessellator;
-import cpw.mods.fml.common.Loader;
 import makamys.neodymium.config.Config;
-import makamys.neodymium.util.OFUtil;
 import makamys.neodymium.util.virtualjar.IVirtualJar;
 import makamys.neodymium.util.virtualjar.VirtualJar;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.settings.GameSettings;
 
 public class Compat {
     
@@ -28,18 +29,38 @@ public class Compat {
     
     public static void init() {
         isGL33Supported = GLContext.getCapabilities().OpenGL33;
-        
-        if (Loader.isModLoaded("triangulator")) {
-            disableTriangulator();
+        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment()) {
+            boolean found = false;
+            Minecraft.getMinecraft().getPlayerUsageSnooper().startSnooper();
+            Map map = ((PlayerUsageSnooperAccessor)Minecraft.getMinecraft().getPlayerUsageSnooper()).getDataMap();
+            for (Object o : map.values()) {
+                String s;
+                try {
+                    s = (String) o;
+                } catch (ClassCastException e) {
+                    continue;
+                }
+                //System.out.println(s);
+                if (s.equals("-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump")) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                FabricGuiEntry.displayCriticalError(new RuntimeException("Neodymium requires the JVM argument -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump to be set. Please add it to your JVM arguments."), true);
+            }
         }
+        /*if (Loader.isModLoaded("triangulator")) {
+            disableTriangulator();
+        }*/
     }
 
     private static void disableTriangulator() {
-        ((ToggleableTessellator)Tessellator.instance).disableTriangulator();
+        //((ToggleableTessellator) Tessellator.instance).disableTriangulator();
     }
     
     public static void getCompatibilityWarnings(List<Warning> warns, List<Warning> criticalWarns, boolean statusCommand){
-        if(Minecraft.getMinecraft().gameSettings.advancedOpengl) {
+        if (Minecraft.getMinecraft().gameSettings.advancedOpengl) {
             warns.add(new Warning("Advanced OpenGL is enabled, performance may be poor." + (statusCommand ? " Click here to disable it." : "")).chatAction("neodymium disable_advanced_opengl"));
         }
         

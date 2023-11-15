@@ -7,9 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.EnumChatFormatting;
 
 public class ChatUtil {
     
@@ -19,8 +18,7 @@ public class ChatUtil {
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         
         if(player != null) {
-            ChatComponentText cc = new ChatComponentText(text);
-            player.addChatComponentMessage(cc);
+            player.addChatMessage(text);
         } else {
             LOGGER.info(text);
         }
@@ -41,7 +39,7 @@ public class ChatUtil {
                 :
                     "INFO";
                 
-        ChatUtil.showChatMessage("" + "[" + EnumChatFormatting.LIGHT_PURPLE + MODID + EnumChatFormatting.RESET + "/" + verbosityText + EnumChatFormatting.RESET + "] " + text);
+        ChatUtil.showChatMessage("[" + EnumChatFormatting.LIGHT_PURPLE + MODID + EnumChatFormatting.RESET + "/" + verbosityText + EnumChatFormatting.RESET + "] " + text);
         
         shownChatMessages.add(text);
     }

@@ -11,7 +11,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -98,13 +97,14 @@ public class Util {
         
         ByteBuffer buf = BufferUtils.createByteBuffer(4 * width * height);
         GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
-        try {
+        /*try {
             // to convert to png:
             // magick -size 512x256 -depth 8 out.rgba out.png
             FileUtils.writeByteArrayToFile(new File("out.rgba"), Util.byteBufferToArray(buf));
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        System.out.println("Dump not implemented");
     }
     
     public static int createBrightness(int sky, int block) {
