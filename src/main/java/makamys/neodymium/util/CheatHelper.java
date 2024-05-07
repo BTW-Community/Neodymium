@@ -1,7 +1,7 @@
 package makamys.neodymium.util;
 
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
 

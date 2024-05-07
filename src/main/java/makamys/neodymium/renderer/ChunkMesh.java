@@ -20,7 +20,7 @@ import makamys.neodymium.util.BufferWriter;
 import makamys.neodymium.util.RecyclingList;
 import makamys.neodymium.util.Util;
 import makamys.neodymium.util.WarningHelper;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 import net.minecraft.src.*;
 
 /** A mesh for a 16x16x16 region of the world. */

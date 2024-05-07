@@ -18,6 +18,7 @@ import java.util.*;
 
 import btw.BTWAddon;
 import makamys.neodymium.Constants;
+import makamys.neodymium.command.NeodymiumCommand;
 import org.lwjgl.input.Keyboard;
 
 public class Config extends BTWAddon {
@@ -73,7 +74,7 @@ public class Config extends BTWAddon {
     private static WatchService watcher;
 
     public Config() {
-        super("Neodymium BTW", Constants.VERSION, "ND");
+        //super("Neodymium BTW", Constants.VERSION, "ND");
     }
 
     private void registerProperties() {
@@ -292,6 +293,7 @@ public class Config extends BTWAddon {
     @Override
     public void initialize() {
         instance = this;
+        NeodymiumCommand.init();
     }
     
     /*public static void flush() {

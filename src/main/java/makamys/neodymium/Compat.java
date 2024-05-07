@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import makamys.neodymium.mixin.PlayerUsageSnooperAccessor;
-import net.fabricmc.loader.gui.FabricGuiEntry;
+import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.GameSettings;
@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GLContext;
 import makamys.neodymium.config.Config;
 import makamys.neodymium.util.virtualjar.IVirtualJar;
 import makamys.neodymium.util.virtualjar.VirtualJar;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 
 public class Compat {
     

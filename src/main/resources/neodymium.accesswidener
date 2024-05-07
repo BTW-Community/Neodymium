@@ -1,0 +1,9 @@
+accessWidener v1 named
+accessible class net/minecraft/src/SlotCreativeInventory
+accessible method net/minecraft/src/SlotCreativeInventory func_75240_a (Lnet/minecraft/src/SlotCreativeInventory;)Lnet/minecraft/src/Slot;
+accessible field net/minecraft/src/GuiContainer guiLeft I
+accessible field net/minecraft/src/GuiContainer guiTop I
+accessible field net/minecraft/src/GuiContainer xSize I
+accessible field net/minecraft/src/GuiContainer ySize I
+accessible field net/minecraft/src/GuiScreen buttonList Ljava/util/List;
+accessible class net/minecraft/src/ContainerCreative
