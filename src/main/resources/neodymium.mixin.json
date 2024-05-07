@@ -11,9 +11,9 @@
     "MixinWorldRenderer",
     "NetClientHandlerAccessor",
     "PlayerControllerMPAccessor",
-    "TessellatorAccessor",
+    "PlayerUsageSnooperAccessor",
     "ServerConfigurationManagerAccessor",
-    "PlayerUsageSnooperAccessor"
+    "TessellatorAccessor"
   ],
   "injectors": {
     "defaultRequire": 1,

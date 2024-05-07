@@ -29,7 +29,7 @@ public class Compat {
     
     public static void init() {
         isGL33Supported = GLContext.getCapabilities().OpenGL33;
-        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment()) {
+        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment() && System.getProperty("os.name") != null && System.getProperty("os.name").contains("Windows")) {
             boolean found = false;
             Minecraft.getMinecraft().getPlayerUsageSnooper().startSnooper();
             Map map = ((PlayerUsageSnooperAccessor)Minecraft.getMinecraft().getPlayerUsageSnooper()).getDataMap();
