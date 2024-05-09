@@ -1,10 +1,10 @@
-buildscript {
-	dependencies {
-		//classpath fileTree(dir: "libs", include: "fabric-loom-0.7.local.jar")
-	}
-}
+import net.fabricmc.loom.api.processor.MinecraftJarProcessor
+import net.fabricmc.loom.api.processor.ProcessorContext
+import net.fabricmc.loom.api.processor.SpecContext
 
-import net.fabricmc.loom.task.RemapJarTask;
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption;
 plugins {
 	id 'maven-publish'
 	id 'fabric-loom' version "1.4-SNAPSHOT"
@@ -32,6 +32,10 @@ repositories {
 
 loom {
 	setIntermediaryUrl('https://maven.legacyfabric.net/net/legacyfabric/intermediary/%1$s/intermediary-%1$s-v2.jar');
+	accessWidenerPath = file('src/main/resources/neodymium.accesswidener')
+	addMinecraftJarProcessor(
+		BTWJarReplacer, projectDir.toString()
+	)
 }
 
 def lwjglVersion = System.getProperty("os.name").toLowerCase().contains("mac") ? "2.9.1" : "2.9.0"
@@ -39,8 +43,7 @@ def lwjglVersion = System.getProperty("os.name").toLowerCase().contains("mac") ?
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "btw.community:mappings:1.0.3"
-	//mappings fileTree(dir: "custom_mappings", include: "**.zip")
-	//mappings "net.legacyfabric:yarn:${project.yarn_mappings}:v2"
+
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	implementation 'net.fabricmc:fabric-loom:1.4-SNAPSHOT'
@@ -53,7 +56,6 @@ dependencies {
 	implementation "org.lwjgl.lwjgl:lwjgl-platform:${lwjglVersion}"
 
 	implementation fileTree(dir: "libs", include: "**.zip")
-	implementation fileTree(dir: "BTW_dev", include: "**.zip")
 
 	implementation 'com.google.guava:guava:14.0.1'
 
@@ -63,9 +65,6 @@ dependencies {
 	implementation group: 'it.unimi.dsi', name: 'fastutil', version: '8.5.12'
 
 	implementation 'org.apache.commons:commons-lang3:3.13.0'
-
-	//runtimeOnly fileTree(dir: "build/devlibs", include: "${archives_base_name}-${mod_version}-dev.jar")
-
 }
 
 configurations {
@@ -120,4 +119,39 @@ runClient {
 
 runServer {
 	dependsOn(jar)
+}
+
+class BTWJarReplacer implements MinecraftJarProcessor<Spec> {
+	String path;
+
+	@javax.inject.Inject
+	BTWJarReplacer(String path) {
+		super()
+		this.path = path
+	}
+
+	@Override
+	Spec buildSpec(SpecContext context) {
+		return new Spec() {
+			@Override
+			int hashCode() {
+				return super.hashCode()
+			}
+		}
+	}
+
+	@Override
+	void processJar(java.nio.file.Path jar, Spec spec, ProcessorContext context) throws IOException {
+		// Replace the Minecraft jar with the custom one from BTW_dev.
+		// This is just a straight up file replacement, no remapping or anything.
+		Files.copy(Paths.get(path, "BTW_dev/BTW_dev.zip"), jar, StandardCopyOption.REPLACE_EXISTING)
+	}
+
+	@Override
+	String getName() {
+		return "BTWJarReplacer";
+	}
+
+	interface Spec extends MinecraftJarProcessor.Spec {
+	}
 }
