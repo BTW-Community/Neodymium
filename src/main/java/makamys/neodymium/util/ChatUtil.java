@@ -20,7 +20,7 @@ public class ChatUtil {
         if(player != null) {
             player.addChatMessage(text);
         } else {
-            LOGGER.info(text);
+            LOGGER.log(System.Logger.Level.INFO, text);
         }
     }
     

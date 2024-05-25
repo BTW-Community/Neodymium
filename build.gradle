@@ -48,8 +48,8 @@ dependencies {
 
 	implementation 'net.fabricmc:fabric-loom:1.4-SNAPSHOT'
 
-	implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
-	implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
+	//implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+	//implementation 'org.apache.logging.log4j:log4j-api:2.19.0'
 
 	implementation "org.lwjgl.lwjgl:lwjgl_util:${lwjglVersion}"
 	implementation "org.lwjgl.lwjgl:lwjgl:${lwjglVersion}"
@@ -144,7 +144,14 @@ class BTWJarReplacer implements MinecraftJarProcessor<Spec> {
 	void processJar(java.nio.file.Path jar, Spec spec, ProcessorContext context) throws IOException {
 		// Replace the Minecraft jar with the custom one from BTW_dev.
 		// This is just a straight up file replacement, no remapping or anything.
-		Files.copy(Paths.get(path, "BTW_dev/BTW_dev.zip"), jar, StandardCopyOption.REPLACE_EXISTING)
+		if (!Files.exists(Paths.get(path, "build/BTW_dev/BTW_dev.zip"))) {
+			// Print a warning if the BTW_dev zip doesn't exist.
+			System.err.println("BTW_dev zip not found, skipping BTWJarReplacer")
+		} else {
+			Files.copy(Paths.get(path, "build/BTW_dev/BTW_dev.zip"), jar, StandardCopyOption.REPLACE_EXISTING)
+			// Add Javadocs
+			Files.copy(Paths.get(path, "build/BTW_dev/BTW_dev-javadoc.jar"), jar.resolveSibling(jar.getFileName().toString().replace(".jar", "-javadoc.jar")), StandardCopyOption.REPLACE_EXISTING)
+		}
 	}
 
 	@Override

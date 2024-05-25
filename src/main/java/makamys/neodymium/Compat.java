@@ -29,7 +29,7 @@ public class Compat {
     
     public static void init() {
         isGL33Supported = GLContext.getCapabilities().OpenGL33;
-        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment() && System.getProperty("os.name") != null && System.getProperty("os.name").contains("Windows")) {
+        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment() && System.getProperty("os.name") != null && System.getProperty("os.name").toLowerCase().contains("windows")) {
             boolean found = false;
             Minecraft.getMinecraft().getPlayerUsageSnooper().startSnooper();
             Map map = ((PlayerUsageSnooperAccessor)Minecraft.getMinecraft().getPlayerUsageSnooper()).getDataMap();
@@ -47,7 +47,7 @@ public class Compat {
                 }
             }
             if (!found) {
-                FabricGuiEntry.displayCriticalError(new RuntimeException("Neodymium requires the JVM argument -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump to be set. Please add it to your JVM arguments."), true);
+                //FabricGuiEntry.displayCriticalError(new RuntimeException("Neodymium requires the JVM argument -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump to be set. Please add it to your JVM arguments."), true);
             }
         }
         /*if (Loader.isModLoaded("triangulator")) {
@@ -72,7 +72,7 @@ public class Compat {
                     criticalWarns.add(new Warning("A shader pack is enabled, this is not supported."));
                 }
             } catch(Exception e) {
-                LOGGER.warn("Failed to get shader pack name");
+                LOGGER.log(System.Logger.Level.WARNING, "Failed to get shader pack name");
                 e.printStackTrace();
             }
         } catch (ClassNotFoundException e) {
@@ -114,7 +114,7 @@ public class Compat {
     public static void forceEnableOptiFineDetectionOfFastCraft() {
         if(Compat.class.getResource("/fastcraft/Tweaker.class") != null) {
             // If OptiFine is present, it's already on the class path at this point, so our virtual jar won't override it.
-            LOGGER.info("FastCraft is present, applying hack to forcingly enable FastCraft's OptiFine compat");
+            LOGGER.log(System.Logger.Level.INFO, "FastCraft is present, applying hack to forcingly enable FastCraft's OptiFine compat");
             VirtualJar.add(new OptiFineStubVirtualJar());
         }
     }
@@ -141,7 +141,7 @@ public class Compat {
         public InputStream getInputStream(String path) {
             if(path.equals("/optifine/OptiFineForgeTweaker.class")) {
                 // Dummy file to make FastCraft think OptiFine is present.
-                LOGGER.debug("Returning a dummy /optifine/OptiFineForgeTweaker.class to force FastCraft compat.");
+                LOGGER.log(System.Logger.Level.DEBUG, "Returning a dummy /optifine/OptiFineForgeTweaker.class to force FastCraft compat.");
                 return new ByteArrayInputStream(new byte[0]);
             } else {
                 return null;

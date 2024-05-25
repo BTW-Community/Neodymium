@@ -113,7 +113,7 @@ public class GPUMemoryManager {
                 ChatUtil.showNeoChatMessage("VRAM keeps getting full! Reverting to vanilla renderer. Try increasing the VRAM buffer size in the config, if possible.", ChatUtil.MessageVerbosity.ERROR, false);
                 Compat.onNotEnoughVRAM(Config.VRAMSize);
             } else {
-                LOGGER.debug("Reloading renderer because VRAM is full.");
+                LOGGER.log(System.Logger.Level.DEBUG, "Reloading renderer because VRAM is full.");
                 // TODO restart renderer with more VRAM allocated when this happens.
             }
             lastVRAMFullness = t;

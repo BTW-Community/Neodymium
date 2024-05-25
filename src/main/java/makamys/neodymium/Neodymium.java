@@ -291,10 +291,10 @@ public class Neodymium implements ModInitializer, PreLaunchEntrypoint
         }
         
         for(Warning warn : warns) {
-            LOGGER.warn(warn.text);
+            LOGGER.log(System.Logger.Level.WARNING, warn.text);
         }
         for(Warning criticalWarn : criticalWarns) {
-            LOGGER.warn("Critical: " + criticalWarn.text);
+            LOGGER.log(System.Logger.Level.WARNING, "Critical: " + criticalWarn.text);
         }
         
         return new Pair(warns, criticalWarns);

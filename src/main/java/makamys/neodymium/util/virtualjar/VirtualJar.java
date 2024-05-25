@@ -27,7 +27,7 @@ public class VirtualJar {
     public static void registerHandler() {
         if(registered) return;
         
-        LOGGER.debug("Registering URL protocol handler: " + PROTOCOL);
+        LOGGER.log(System.Logger.Level.DEBUG, "Registering URL protocol handler: " + PROTOCOL);
         
         // We want the Handler to always be loaded by the same class loader.
         //Launch.classLoader.addClassLoaderExclusion("makamys." + MODID + ".util.virtualjar.protocol." + PROTOCOL);
@@ -45,7 +45,7 @@ public class VirtualJar {
     public static void add(IVirtualJar jar) {
         registerHandler();
         
-        LOGGER.trace("Adding virtual jar to class path: " + PROTOCOL + ":" + jar.getName() + ".jar");
+        LOGGER.log(System.Logger.Level.TRACE, "Adding virtual jar to class path: " + PROTOCOL + ":" + jar.getName() + ".jar");
         
         String urlStr = PROTOCOL + ":" + jar.getName() + ".jar!/";
         
@@ -58,7 +58,7 @@ public class VirtualJar {
             
             jars.put(jar.getName(), jar);
         } catch(MalformedURLException e) {
-            LOGGER.fatal("Failed to add virtual jar to class path");
+            LOGGER.log(System.Logger.Level.ERROR, "Failed to add virtual jar to class path");
             e.printStackTrace();
         }
     }

@@ -12,7 +12,7 @@ public class WarningHelper {
     public static void showDebugMessageOnce(String warning) {
         int hash = warning.hashCode();
         if(!shownWarnings.contains(hash)) {
-            LOGGER.debug(warning);
+            LOGGER.log(System.Logger.Level.DEBUG, warning);
             shownWarnings.add(hash);
         }
     }

@@ -66,7 +66,7 @@ public class ChunkMesh extends Mesh {
         instances++;
         
         if(!quadBuf.getAsList().isEmpty()) {
-            LOGGER.error("Invalid state: tried to construct a chunk mesh before the previous one has finished constructing!");
+            LOGGER.log(System.Logger.Level.ERROR, "Invalid state: tried to construct a chunk mesh before the previous one has finished constructing!");
         }
     }
     
@@ -119,22 +119,22 @@ public class ChunkMesh extends Mesh {
                 if(!Config.silenceErrors) {
                     String dimId = wr.worldObj != null && wr.worldObj.provider != null ? "" + wr.worldObj.provider.dimensionId : "UNKNOWN";
                     if(!errors.isEmpty()) {
-                        LOGGER.error("Errors in chunk ({}, {}, {}) in dimension {}:", x, y, z, dimId);
+                        LOGGER.log(System.Logger.Level.ERROR, "Errors in chunk ({}, {}, {}) in dimension {}:", x, y, z, dimId);
                         for(String error : errors) {
-                            LOGGER.error("Error: " + error);
+                            LOGGER.log(System.Logger.Level.ERROR, "Error: " + error);
                         }
                         for(String warning : warnings) {
-                            LOGGER.error("Warning: " + warning);
+                            LOGGER.log(System.Logger.Level.ERROR, "Warning: " + warning);
                         }
-                        LOGGER.error("(World renderer pos: ({}, {}, {}), Tessellator pos: ({}, {}, {}), Tessellation count: {}", wr.posX, wr.posY, wr.posZ, ((TessellatorAccessor) t).getXOffset(), ((TessellatorAccessor) t).getYOffset(), ((TessellatorAccessor) t).getZOffset(), tesselatorDataCount);
-                        LOGGER.error("Stack trace:");
+                        LOGGER.log(System.Logger.Level.ERROR, "(World renderer pos: ({}, {}, {}), Tessellator pos: ({}, {}, {}), Tessellation count: {}", wr.posX, wr.posY, wr.posZ, ((TessellatorAccessor) t).getXOffset(), ((TessellatorAccessor) t).getYOffset(), ((TessellatorAccessor) t).getZOffset(), tesselatorDataCount);
+                        LOGGER.log(System.Logger.Level.ERROR, "Stack trace:");
                         try {
                             // Generate a stack trace
                             throw new IllegalArgumentException();
                         } catch(IllegalArgumentException e) {
                             e.printStackTrace();
                         }
-                        LOGGER.error("Skipping chunk due to errors.");
+                        LOGGER.log(System.Logger.Level.ERROR, "Skipping chunk due to errors.");
                         quadBuf.reset();
                     } else {
                         WarningHelper.showDebugMessageOnce(String.format("Warnings in chunk (%d, %d, %d) in dimension %s: %s", x, y, z, dimId, String.join(", ", warnings)));

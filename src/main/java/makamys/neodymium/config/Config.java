@@ -153,7 +153,7 @@ public class Config extends BTWAddon {
             try {
                 registerWatchService();
             } catch(IOException e) {
-                LOGGER.warn("Failed to register watch service: " + e + " (" + e.getMessage() + "). Changes to the config file will not be reflected");
+                LOGGER.log(System.Logger.Level.WARNING,  "Failed to register watch service: " + e + " (" + e.getMessage() + "). Changes to the config file will not be reflected");
             }
         }
     }*/
@@ -193,7 +193,7 @@ public class Config extends BTWAddon {
             try {
                 currentValue = field.get(null);
             } catch (Exception e) {
-                LOGGER.error("Failed to get value of field " + field.getName());
+                LOGGER.log(System.Logger.Level.ERROR, "Failed to get value of field " + field.getName());
                 e.printStackTrace();
                 continue;
             }
@@ -245,7 +245,7 @@ public class Config extends BTWAddon {
             try {
                 field.set(null, newValue);
             } catch (Exception e) {
-                LOGGER.error("Failed to set value of field " + field.getName());
+                LOGGER.log(System.Logger.Level.ERROR, "Failed to set value of field " + field.getName());
                 e.printStackTrace();
             }
         }
