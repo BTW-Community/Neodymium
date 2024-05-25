@@ -38,7 +38,7 @@ import makamys.neodymium.util.GuiHelper;
 import makamys.neodymium.util.OFUtil;
 import makamys.neodymium.util.Preprocessor;
 import makamys.neodymium.util.Util;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 import net.minecraft.src.*;
 
 /** The main renderer class. */

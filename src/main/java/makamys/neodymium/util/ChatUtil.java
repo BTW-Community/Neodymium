@@ -6,7 +6,7 @@ import static makamys.neodymium.Constants.MODID;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EnumChatFormatting;
 

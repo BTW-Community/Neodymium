@@ -8,10 +8,7 @@ import java.util.function.Consumer;
 
 import makamys.neodymium.config.Config;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.CommandBase;
-import net.minecraft.src.EnumChatFormatting;
-import net.minecraft.src.ICommandSender;
-import net.minecraft.src.WrongUsageException;
+import net.minecraft.src.*;
 import org.lwjgl.input.Mouse;
 
 import makamys.neodymium.Compat;
@@ -19,7 +16,6 @@ import makamys.neodymium.Compat.Warning;
 import makamys.neodymium.Neodymium;
 import makamys.neodymium.util.ChatUtil;
 import makamys.neodymium.util.ChatUtil.MessageVerbosity;
-import net.minecraft.client.Minecraft;
 
 public class NeodymiumCommand extends CommandBase {
     
@@ -79,7 +75,7 @@ public class NeodymiumCommand extends CommandBase {
     }
     
     public static void addChatMessage(ICommandSender sender, String text) {
-        sender.sendChatToPlayer(text);
+        sender.sendChatToPlayer(ChatMessageComponent.createFromText(text));
     }
     
     public static void addColoredChatMessage(ICommandSender sender, String text, EnumChatFormatting color) {
@@ -90,7 +86,7 @@ public class NeodymiumCommand extends CommandBase {
         if(fixup != null) {
             fixup.accept(text);
         }
-        sender.sendChatToPlayer(text);
+        sender.sendChatToPlayer(ChatMessageComponent.createFromText(text));
     }
     
     @SuppressWarnings("unchecked")
@@ -123,12 +119,12 @@ public class NeodymiumCommand extends CommandBase {
             if(command != null) {
                 msg.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
             }*/
-            sender.sendChatToPlayer(text);
+            sender.sendChatToPlayer(ChatMessageComponent.createFromText(text));
         }
 
         private static void addChatMessages(ICommandSender sender, Collection<String> messages) {
             for(String line : messages) {
-                sender.sendChatToPlayer(line);
+                sender.sendChatToPlayer(ChatMessageComponent.createFromText(line));
             }
         }
         

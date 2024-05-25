@@ -1,6 +1,7 @@
 package makamys.neodymium.mixin;
 
 import net.minecraft.src.EntityLiving;
+import net.minecraft.src.EntityLivingBase;
 import net.minecraft.src.RenderGlobal;
 import net.minecraft.src.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,11 +51,11 @@ abstract class MixinRenderGlobal {
     }
     
     @Inject(method = "updateRenderers", at = @At(value = "RETURN"))
-    public void speedUpChunkUpdatesForDebug(EntityLiving entityLiving, boolean bl, CallbackInfoReturnable<Boolean> cir) {
+    public void speedUpChunkUpdatesForDebug(EntityLivingBase entityLivingBase, boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if(Neodymium.isActive() && !nd$isInsideUpdateRenderers) {
             nd$isInsideUpdateRenderers = true;
             for(int i = 0; i < Neodymium.renderer.rendererSpeedup; i++) {
-                ((RenderGlobal)(Object)this).updateRenderers(entityLiving, bl);
+                ((RenderGlobal)(Object)this).updateRenderers(entityLivingBase, bl);
             }
             nd$isInsideUpdateRenderers = false;
         }

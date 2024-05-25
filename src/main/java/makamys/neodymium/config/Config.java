@@ -17,12 +17,8 @@ import java.nio.file.WatchService;
 import java.util.*;
 
 import btw.BTWAddon;
-import net.fabricmc.loader.FabricLoaderImpl;
-import net.fabricmc.loader.gui.FabricGuiEntry;
-import net.fabricmc.loader.launch.common.FabricLauncher;
-import net.fabricmc.loader.launch.common.FabricLauncherBase;
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.MinecraftServer;
+import makamys.neodymium.Constants;
+import makamys.neodymium.command.NeodymiumCommand;
 import org.lwjgl.input.Keyboard;
 
 public class Config extends BTWAddon {
@@ -78,7 +74,7 @@ public class Config extends BTWAddon {
     private static WatchService watcher;
 
     public Config() {
-        super("Neodymium BTW", "0.2.1", "ND");
+        //super("Neodymium BTW", Constants.VERSION, "ND");
     }
 
     private void registerProperties() {
@@ -297,6 +293,7 @@ public class Config extends BTWAddon {
     @Override
     public void initialize() {
         instance = this;
+        NeodymiumCommand.init();
     }
     
     /*public static void flush() {

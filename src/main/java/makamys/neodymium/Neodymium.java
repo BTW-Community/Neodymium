@@ -19,7 +19,7 @@ import makamys.neodymium.config.Config;
 import makamys.neodymium.renderer.NeoRenderer;
 import makamys.neodymium.util.ChatUtil;
 import makamys.neodymium.util.WarningHelper;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 
 public class Neodymium implements ModInitializer, PreLaunchEntrypoint
 {
@@ -302,7 +302,7 @@ public class Neodymium implements ModInitializer, PreLaunchEntrypoint
 
     @Override
     public void onInitialize() {
-        NeodymiumCommand.init();
+
     }
 
     @Override

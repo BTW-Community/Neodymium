@@ -8,14 +8,14 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import static makamys.neodymium.Constants.LOGGER;
 
 import makamys.neodymium.util.virtualjar.protocol.neodymiumvirtualjar.Handler;
-import net.fabricmc.loader.launch.common.FabricLauncherBase;
-import net.minecraft.launchwrapper.Launch;
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 
 
 public class VirtualJar {
@@ -30,7 +30,7 @@ public class VirtualJar {
         LOGGER.debug("Registering URL protocol handler: " + PROTOCOL);
         
         // We want the Handler to always be loaded by the same class loader.
-        Launch.classLoader.addClassLoaderExclusion("makamys." + MODID + ".util.virtualjar.protocol." + PROTOCOL);
+        //Launch.classLoader.addClassLoaderExclusion("makamys." + MODID + ".util.virtualjar.protocol." + PROTOCOL);
         
         // The Handler is loaded by the AppClassLoader, but it needs to access the state of VirtualJar, which is loaded
         // by the LaunchClassLoader. The solution? Make the Handler just a proxy that delegates the real work to
@@ -51,10 +51,10 @@ public class VirtualJar {
         
         try {
             URL url = new URL(urlStr);
-            Launch.classLoader.addURL(url);
+            FabricLauncherBase.getLauncher().addToClassPath(Path.of(urlStr));
             // Forge expects all URLs in the sources list to be convertible to File objects, so we must remove it to
             // avoid a crash.
-            Launch.classLoader.getSources().remove(url);
+            //Launch.classLoader.getSources().remove(url);
             
             jars.put(jar.getName(), jar);
         } catch(MalformedURLException e) {

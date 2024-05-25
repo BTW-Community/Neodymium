@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import makamys.neodymium.mixin.PlayerUsageSnooperAccessor;
-import net.fabricmc.loader.gui.FabricGuiEntry;
+import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.launch.common.FabricLauncherBase;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.GameSettings;
@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GLContext;
 import makamys.neodymium.config.Config;
 import makamys.neodymium.util.virtualjar.IVirtualJar;
 import makamys.neodymium.util.virtualjar.VirtualJar;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 
 public class Compat {
     
@@ -29,7 +29,7 @@ public class Compat {
     
     public static void init() {
         isGL33Supported = GLContext.getCapabilities().OpenGL33;
-        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment()) {
+        if (!MinecraftServer.getIsServer() && !FabricLauncherBase.getLauncher().isDevelopment() && System.getProperty("os.name") != null && System.getProperty("os.name").contains("Windows")) {
             boolean found = false;
             Minecraft.getMinecraft().getPlayerUsageSnooper().startSnooper();
             Map map = ((PlayerUsageSnooperAccessor)Minecraft.getMinecraft().getPlayerUsageSnooper()).getDataMap();

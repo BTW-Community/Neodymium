@@ -3,7 +3,7 @@ package makamys.neodymium.util;
 import net.minecraft.src.Tessellator;
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 
 public class GuiHelper {
     

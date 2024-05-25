@@ -4,7 +4,7 @@ import makamys.neodymium.Compat;
 import makamys.neodymium.ElementType;
 import makamys.neodymium.Neodymium;
 import makamys.neodymium.Phase;
-import net.minecraft.client.Minecraft;
+import net.minecraft.src.Minecraft;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.Profiler;
 import net.minecraft.src.WorldClient;
@@ -61,7 +61,7 @@ public class MinecraftMixin {
         Neodymium.instance.onRenderTick(Phase.END);
     }
 
-    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayDebugInfo(J)V"))
+    @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/src/Minecraft;displayDebugInfo(J)V"))
     private void runGameLoopMixin3(CallbackInfo ci) {
         Neodymium.instance.onRenderOverlay(ElementType.DEBUG, null);
     }

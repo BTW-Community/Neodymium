@@ -16,21 +16,25 @@
 
   "environment": "*",
   "entrypoints": {
-    "init": [
+    "main": [
       "makamys.neodymium.Neodymium"
     ],
     "preLaunch": [
       "makamys.neodymium.Neodymium"
+    ],
+    "btw:addon": [
+      "makamys.neodymium.config.Config"
     ]
   },
   "mixins": [
     "neodymium.mixin.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.7.4"
+    "fabricloader": ">=0.14.19",
+    "minecraft": "1.6.4"
   },
-  "suggests": {
-    "flamingo": "*"
-  }
+  "custom": {
+    "btw:addon_prefix": "ND"
+  },
+  "accessWidener": "neodymium.accesswidener"
 }

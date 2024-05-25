@@ -1,5 +1,7 @@
 package makamys.neodymium.util.virtualjar.protocol.neodymiumvirtualjar;
 
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
+
 import static makamys.neodymium.Constants.MODID;
 import static makamys.neodymium.Constants.PROTOCOL;
 
@@ -8,7 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import net.fabricmc.loader.launch.common.FabricLauncherBase;
 
 public class Handler extends URLStreamHandler {
 
